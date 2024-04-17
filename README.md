@@ -3,7 +3,7 @@
 ```shell
 git clone https://github.com/zhangmanyue774/OneBlue.git
 
-java -jar OneBlue.jar
+# 自行打包
 
 #默认端口为9000
 ```
