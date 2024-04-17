@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: OneBlue
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.sqlite.JDBC
+    url: "jdbc:sqlite:src/main/resources/db/oneblue.db"
+  sql:
+    init:
+      platform: sqlite
+      schema-locations: classpath:db/init.sql
+      data-locations: classpath:db/initData.sql
+      mode: always
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+server:
+  port: 9000
+
+oneblue:
+  music-folder-path: /Users/oneblue/Music
+  web-dav:
+    url: http://localhost:8080/webdav
+    username: oneblue
+    password: oneblue
+  username: oneblue@oneblue.com
+  password: oneblue
