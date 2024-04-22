@@ -81,10 +81,14 @@ class OneBlueApplicationTests {
     void test3() {
         System.out.println(musicSourceService.searchMusic("周杰伦", 30, 1));
     }
-    @Resource(name="webDavMusic")
+    @Resource(name="LocalMusic")
     private MusicInfoService musicInfoService;
     @Test
     void test4() {
         musicInfoService.SynchronizeMusicListToDb();
+    }
+    @Test
+    void test5() {
+        systemConfigService.createSymbolicLinks();
     }
 }

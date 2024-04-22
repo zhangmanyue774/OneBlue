@@ -1,9 +1,11 @@
 package com.sanzuriver.oneblue.Service.Impl.MusicInfo;
 
 import com.sanzuriver.oneblue.Entity.MusicTag;
+import com.sanzuriver.oneblue.Entity.SourseVO.MusicTagResp;
 import com.sanzuriver.oneblue.Entity.VO.ResponseInfo;
 import com.sanzuriver.oneblue.Mapper.MusicTagsMapper;
 import com.sanzuriver.oneblue.Service.MusicInfoService;
+import com.sanzuriver.oneblue.Service.MusicSourceService;
 import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,7 @@ import org.apache.jackrabbit.webdav.client.methods.HttpPropfind;
 import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.net.URLDecoder;
@@ -30,7 +33,7 @@ import java.util.Set;
 @Service("webDavMusic")
 @Slf4j
 @RefreshScope
-public class WebDavMusicInfoServiceImpl implements MusicInfoService {
+public class WebDavMusicInfoServiceImpl extends MusicInfoAbstract implements MusicInfoService {
     @Resource
     private MusicTagsMapper musicTagsMapper;
     @Resource
@@ -43,17 +46,6 @@ public class WebDavMusicInfoServiceImpl implements MusicInfoService {
     public List<MusicTag> getMusicList() {
         return musicTagsMapper.getWebDavMusicList();
     }
-
-    @Override
-    public byte[] getMusicCover(String fileName) {
-        return new byte[0];
-    }
-
-    @Override
-    public byte[] getMusicPlay(String fileName) {
-        return new byte[0];
-    }
-
     @Override
     public boolean manualSetMusicTag(String fileName, MusicTag musicTag) {
         return false;
@@ -62,11 +54,14 @@ public class WebDavMusicInfoServiceImpl implements MusicInfoService {
     @SneakyThrows
     //(仅支持单目录下的扫描)目录扫描同步法
     public void SynchronizeMusicListToDb() {
+        long start = System.currentTimeMillis();
         DavPropertyNameSet set = new DavPropertyNameSet();
-        HttpPropfind httpPropfind = new HttpPropfind(url+"/Music", DavConstants.PROPFIND_ALL_PROP, set,DavConstants.DEPTH_1);
+        HttpPropfind httpPropfind = new HttpPropfind(url, DavConstants.PROPFIND_ALL_PROP, set,DavConstants.DEPTH_1);
         HttpResponse response = this.client.execute(httpPropfind, this.context);
         MultiStatus multiStatus = httpPropfind.getResponseBodyAsMultiStatus(response);
         MultiStatusResponse[] responses = multiStatus.getResponses();
+        long end = System.currentTimeMillis();
+        log.info("WebDav扫描耗时:{}",end-start);
         Set<String> davMusicList = new HashSet<>();
         for (MultiStatusResponse res : responses) {
             String filePath = URLDecoder.decode(res.getHref(), StandardCharsets.UTF_8);
@@ -76,18 +71,8 @@ public class WebDavMusicInfoServiceImpl implements MusicInfoService {
             }
         }
         Set<String> dbMusicList = musicTagsMapper.getWebDavMusicListFileName();
-        //获取交集(无需同步的文件)
-        Set<String> common = new HashSet<>(dbMusicList);
-        common.retainAll(davMusicList);
-        //获取差集(需要同步的文件)
-        //数据库独有文件(删除)
-        Set<String> dbExclusive = new HashSet<>(dbMusicList);
-        dbExclusive.removeAll(davMusicList);
-        dbExclusive.forEach(musicTagsMapper::deleteWebDavMusicTag);
-        //Dav独有文件(刮削并加入数据库/直接获取网络资源加入数据库（无文件操作）)
-        Set<String> diskExclusive = new HashSet<>(davMusicList);
-        diskExclusive.removeAll(dbMusicList);
-        log.info("pathFile:{}",dbMusicList);
+        comparison(dbMusicList,davMusicList,false);
+        log.info("音乐列表同步完成");
     }
 
     @Override

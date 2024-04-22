@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.UUID;
+
 @Configuration
 public class WebClientConfiguration {
     @Bean("qqMusicRestTemplate")
@@ -15,9 +17,9 @@ public class WebClientConfiguration {
                     headers.add("User-Agent", "QQ音乐/73222 CFNetwork/1406.0.2 Darwin/22.4.0");
                     headers.add("Accept", "*/*");
                     headers.add("Accept-Language", "zh-CN,zh-Hans;q=0.9");
-                    headers.add("Referer", "http://y.qq.com");
+                    headers.add("Referer", "https://y.qq.com");
                     headers.add("Content-Type", "application/json; charset=UTF-8");
-                    headers.add("Cookie", "");
+                    headers.add("Cookie", String.valueOf(UUID.randomUUID()));
                     return execution.execute(request, body);
                 });
         return restTemplate;

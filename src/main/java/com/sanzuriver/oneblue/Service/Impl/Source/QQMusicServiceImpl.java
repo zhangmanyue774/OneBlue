@@ -2,7 +2,6 @@ package com.sanzuriver.oneblue.Service.Impl.Source;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sanzuriver.oneblue.Common.Util.JsonUtil;
-import com.sanzuriver.oneblue.Entity.MusicTag;
 import com.sanzuriver.oneblue.Entity.SourseVO.MusicTagResp;
 import com.sanzuriver.oneblue.Entity.SourseVO.QQMusicSearchRequestBody;
 import com.sanzuriver.oneblue.Entity.SourseVO.QQMusicSingleSongRequestBody;
@@ -10,18 +9,12 @@ import com.sanzuriver.oneblue.Entity.VO.ResponseInfo;
 import com.sanzuriver.oneblue.Service.MusicSourceService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.images.Artwork;
-import org.jaudiotagger.tag.images.ArtworkFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-//QQ音乐刮削源
+
+import java.util.*;
+
 @Service("QQMusic")
 @Slf4j
 public class QQMusicServiceImpl implements MusicSourceService {
@@ -61,7 +54,7 @@ public class QQMusicServiceImpl implements MusicSourceService {
                                         .query(keyword)
                                         .search_type(0)
                                         .grp(1)
-                                        .searchid("some-uuid")
+                                        .searchid(UUID.randomUUID().toString())
                                         .nqc_flag(0)
                                         .build())
                                 .build())
@@ -74,7 +67,6 @@ public class QQMusicServiceImpl implements MusicSourceService {
 
         // 获取响应体
         String responseBody = responseEntity.getBody();
-        System.out.println(responseBody);
         // 解析响应体
         JsonNode jsonNode = JsonUtil.parseJSONObject(responseBody);
         return getMusicListData(jsonNode);

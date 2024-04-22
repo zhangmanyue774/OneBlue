@@ -9,10 +9,15 @@ import java.util.List;
 public interface MusicInfoService {
     //获取音乐列表:包含(音乐链接,图片链接（依赖于接口实现）
     List<MusicTag> getMusicList();
+    //byte本地响应
     //封面接口
-    byte[] getMusicCover(String fileName);
+    default byte[] getMusicCover(String fileName){
+        return null;
+    }
     //音乐接口
-    byte[] getMusicPlay(String fileName);
+    default byte[] getMusicPlay(String fileName){
+        return null;
+    };
     //标签纠错刮削
     boolean manualSetMusicTag(String fileName,MusicTag musicTag);
 //    --------------------------内部服务------------------------

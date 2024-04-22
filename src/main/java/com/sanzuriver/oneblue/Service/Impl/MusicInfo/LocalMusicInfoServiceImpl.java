@@ -30,13 +30,11 @@ import java.util.stream.Collectors;
 @Service("LocalMusic")
 @RefreshScope
 @Slf4j
-public class LocalMusicInfoServiceImpl implements MusicInfoService {
+public class LocalMusicInfoServiceImpl extends MusicInfoAbstract implements MusicInfoService {
     @Value("${oneblue.music-folder-path}")
     private String musicFolderPath;
     @Resource
     private MusicTagsMapper musicTagsMapper;
-    @Resource(name = "qqMusicRestTemplate")
-    private RestTemplate restTemplate;
     @Override
     public List<MusicTag> getMusicList() {
         return musicTagsMapper.getMusicList();
@@ -67,18 +65,7 @@ public class LocalMusicInfoServiceImpl implements MusicInfoService {
                 .map(Path::getFileName)
                 .map(Path::toString)
                 .collect(Collectors.toSet());
-        //获取交集(无需同步的文件)
-        Set<String> common = new HashSet<>(dBMusicList);
-        common.retainAll(diskMusicList);
-        //获取差集(需要同步的文件)
-        //数据库独有文件(删除)
-        Set<String> dbExclusive = new HashSet<>(dBMusicList);
-        dbExclusive.removeAll(diskMusicList);
-        dbExclusive.forEach(musicTagsMapper::deleteMusicTag);
-        //磁盘独有文件(刮削（文件操作）并加入数据库)
-        Set<String> diskExclusive = new HashSet<>(diskMusicList);
-        diskExclusive.removeAll(dBMusicList);
-        //Todo:刮削并加入数据库 传入差集
+        comparison(dBMusicList, diskMusicList, true);
         log.info("音乐列表同步完成");
     }
 
@@ -98,46 +85,6 @@ public class LocalMusicInfoServiceImpl implements MusicInfoService {
         log.info("音乐列表初始化完成");
 
     }
-    @SneakyThrows
-    //手动设置完整音乐标签(先打TAG 未完成再写入数据库）
-    void setMusicTag(String fileName,MusicTag musicTag) {
-        AudioFile audioFile = AudioFileIO.read(new File(musicFolderPath + fileName));
-        Tag tag = audioFile.getTag();
-        if(tag.getFirst(FieldKey.ARTIST).isEmpty()) {
-            tag.setField(FieldKey.ARTIST,musicTag.getArtist());
-        }
-        if(tag.getFirst(FieldKey.ALBUM).isEmpty()) {
-            tag.setField(FieldKey.ALBUM,musicTag.getAlbum());
-        }
-        if(tag.getFirst(FieldKey.YEAR).isEmpty()) {
-            tag.setField(FieldKey.YEAR,musicTag.getYear());
-        }
-        if(tag.getFirst(FieldKey.TITLE).isEmpty()) {
-            tag.setField(FieldKey.TITLE,musicTag.getTitle());
-        }
-        if(tag.getFirst(FieldKey.LYRICS).isEmpty()) {
-            tag.setField(FieldKey.LYRICS,musicTag.getLyrics());
-        }
-        if(tag.getFirstArtwork() != null && tag.getFirstArtwork().getBinaryData().length == 0) {
-            tag.setField(getCoverByte(musicTag.getCoverArt()));
-        }
-        AudioFileIO.write(audioFile);
-
-        musicTagsMapper.insertMusicTag(musicTag);
-    }
-    public Artwork getCoverByte(String coverUrl) {
-        try {
-            byte[] imageBytes = restTemplate.getForObject(coverUrl, byte[].class);
-            Artwork artwork = ArtworkFactory.getNew();
-            artwork.setBinaryData(imageBytes);
-            artwork.setMimeType("image/jpeg");
-            return artwork;
-        } catch (Exception e) {
-            log.error("封面资源不存在:{}", e.getMessage());
-            return null;
-        }
-    }
-    //均需要获取网络资源Tag 如何处理MusicSourceService和Info的关系
 
     @SneakyThrows
     public Tag getTag(String fileName) {

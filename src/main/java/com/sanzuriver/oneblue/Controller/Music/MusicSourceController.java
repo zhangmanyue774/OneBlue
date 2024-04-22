@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MusicSourseController {
+public class MusicSourceController {
     @Resource(name = "QQMusic")
     private MusicSourceService musicSourceService;
     @GetMapping("/search")

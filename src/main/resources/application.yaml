@@ -30,3 +30,6 @@ oneblue:
     password: oneblue
   username: oneblue@oneblue.com
   password: oneblue
+  music-dirs:
+    - /home/santu/opt/b
+    - /home/santu/opt/d
