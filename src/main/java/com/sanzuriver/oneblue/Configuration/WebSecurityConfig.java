@@ -46,7 +46,7 @@ public class WebSecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 //对登录注册允许匿名访问
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/search","/user/login","/home","/error", "/user/register").permitAll()
+                        .requestMatchers("/music/share/*","/auth/login","search","/error", "/auth/register","auth/refresh_token","/music/*").permitAll()
                         .anyRequest().authenticated()
                 );
         //禁用缓存

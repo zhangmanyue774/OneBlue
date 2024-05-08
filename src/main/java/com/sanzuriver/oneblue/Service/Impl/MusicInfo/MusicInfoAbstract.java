@@ -34,12 +34,14 @@ public abstract class MusicInfoAbstract {
     private MusicTagsMapper musicTagsMapper;
     @Resource(name = "QQMusic")
     private MusicSourceService musicSourceService;
-    @Resource
+    @Resource(name = "qqMusicRestTemplate")
     private RestTemplate restTemplate;
     @Value("${oneblue.web-dav.url}")
     private String webDavMusicFolderPath;
     @Value("${oneblue.music-folder-path}")
     private String localMusicFolderPath;
+    @Value("${oneblue.domain}")
+    private String domain;
     void comparison(Set<String> dbSet,Set<String>realSet,boolean isLocal){
         //共有文件
         Set<String> common = new HashSet<>(dbSet);
@@ -81,7 +83,6 @@ public abstract class MusicInfoAbstract {
         System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
         log.info("{}扫描完成,新增歌曲：{}",isLocal?"本地":"WebDav",realExclusive.size());
     }
-    @Async
     void updateScrape(String fileName, boolean isLocal) {
         log.info("线程{}开始刮削{}音乐{}",Thread.currentThread().getName(),isLocal?"本地":"WebDav", fileName);
         String songName = fileName.replaceAll("\\.\\w+$", "");
@@ -100,13 +101,13 @@ public abstract class MusicInfoAbstract {
             //数据库逻辑
             upDateLocalMusicTag(fileName,MusicTag.builder()
                     .year(musicTagResp.getYear())
-                    .album(musicTagResp.getAlbum())
+                    .album(musicTagResp.getAlbum().isEmpty()?"未分类专辑":musicTagResp.getAlbum())
                     .artist(musicTagResp.getArtist())
                     .title(musicTagResp.getTitle())
                     .fileName(fileName)
-                    .lyrics(Lyric)
+                    .lyrics(Lyric.isEmpty()?"暂无歌词":Lyric)
                     .coverArt(musicTagResp.getCover())
-                    .playUrl("http://127.0.0.1/play"+"songName=" + songName)
+                    .playUrl(domain+"/music/play/"+songName)
                     .source("local")
                     .build());
         }
@@ -115,14 +116,14 @@ public abstract class MusicInfoAbstract {
             //数据库逻辑
             musicTagsMapper.insertWebDavMusicTag(MusicTag.builder()
                             .year(musicTagResp.getYear())
-                            .album(musicTagResp.getAlbum())
+                            .album(musicTagResp.getAlbum().isEmpty()?"未分类专辑":musicTagResp.getAlbum())
                             .artist(musicTagResp.getArtist())
                             .title(musicTagResp.getTitle())
                             .fileName(fileName)
-                            .lyrics(Lyric)
+                            .lyrics(Lyric.isEmpty()?"暂无歌词":Lyric)
                             .coverArt(musicTagResp.getCover())
                     //TODO:规则拼接
-                            .playUrl(webDavMusicFolderPath + fileName)
+                            .playUrl("https://alist.sanzuriver.cn/d/Music/"+ fileName)
                             .source("webDav")
                     .build());
         }
@@ -154,7 +155,7 @@ public abstract class MusicInfoAbstract {
             artwork.setMimeType("image/jpeg");
             tag.setField(artwork);
         }
-        musicTag.setCoverArt("htpp://127.0.0.1/cover?fileName=" + fileName);
+        musicTag.setCoverArt(domain+"/music/cover/" + fileName);
         AudioFileIO.write(audioFile);
         System.out.println(musicTag);
         musicTagsMapper.insertMusicTag(musicTag);

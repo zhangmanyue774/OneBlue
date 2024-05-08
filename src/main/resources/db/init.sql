@@ -61,3 +61,10 @@ CREATE TABLE IF NOT EXISTS role_permissions (
                                                 FOREIGN KEY(permission_id) REFERENCES permissions(id),
                                                 PRIMARY KEY(role_id, permission_id)
 );
+-- 分享表
+CREATE TABLE IF NOT EXISTS shares (
+                                      id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                      share_id TEXT UNIQUE NOT NULL,
+                                      share_song TEXT NOT NULL,
+                                      share_expire_time TEXT NOT NULL
+);

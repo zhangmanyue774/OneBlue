@@ -10,10 +10,12 @@ import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/auth")
 public class AuthController {
 
     @Resource
@@ -27,7 +29,8 @@ public class AuthController {
         return UserVo.builder()
                 .Avatar(GravatarUtil.getGravatarUrl(user.getEmail()))
                 .email(user.getEmail())
-                .Token(JWTUtil.login(String.valueOf(userID)))
+                .access_token(JWTUtil.login(String.valueOf(userID)).get("access_token"))
+                .refresh_token(JWTUtil.login(String.valueOf(userID)).get("refresh_token"))
                 .build();
     }
     @PostMapping("/register")
@@ -40,5 +43,17 @@ public class AuthController {
     public Object createUser(@RequestBody User user, @PathVariable("role") Integer role) {
         user.setId(new Random().nextInt(9000)+1000);
         return userService.register(user, role);
+    }
+    @PostMapping("/refresh_token")
+    public Object refreshToken(@RequestBody Map<String,String> refreshToken) {
+        String token = refreshToken.get("refresh_token");
+        try {
+            if(JWTUtil.verifyRefreshToken(token)) {
+                return JWTUtil.login(JWTUtil.getRefreshUserId(token));
+            }
+        } catch (Exception e) {
+            return ResponseInfo.UNAUTHORIZED("refresh_token is invalid");
+        }
+        return ResponseInfo.UNAUTHORIZED("refresh_token is invalid");
     }
 }

@@ -31,5 +31,7 @@ oneblue:
   username: oneblue@oneblue.com
   password: oneblue
   music-dirs:
-    - /home/santu/opt/b
-    - /home/santu/opt/d
+    - /home/santu/opt/a
+    - /home/santu/opt/a
+  domain: http://localhost:9000
+

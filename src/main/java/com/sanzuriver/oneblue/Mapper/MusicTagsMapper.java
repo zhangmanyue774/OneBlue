@@ -1,6 +1,7 @@
 package com.sanzuriver.oneblue.Mapper;
 
 import com.sanzuriver.oneblue.Entity.MusicTag;
+import com.sanzuriver.oneblue.Entity.Shares;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -34,6 +35,12 @@ public interface MusicTagsMapper {
     void insertWebDavMusicTag(MusicTag musicTag);
     @Select("select * from webdav_music_tag")
     List<MusicTag> getWebDavMusicList();
-
-
+    @Select("select * from shares where share_id = #{shareId}")
+    Shares getShareMusic(String shareId);
+    @Insert("insert into shares(share_song,share_id,share_expire_time) values (#{shareSong},#{shareId},#{shareExpireTime})")
+    void insertShareMusic(Shares shares);
+    @Delete("delete from shares where share_id = #{shareId}")
+    void deleteShareMusic(String shareId);
+    @Select("select * from shares")
+    List<Shares> getShareMusicList();
 }

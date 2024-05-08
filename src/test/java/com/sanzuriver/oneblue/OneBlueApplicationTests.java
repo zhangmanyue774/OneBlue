@@ -74,14 +74,14 @@ class OneBlueApplicationTests {
         return hexString.toString();
     }
 
-    @Resource(name = "QQMusic")
+    @Resource(name = "NetEase")
     private MusicSourceService musicSourceService;
 
     @Test
     void test3() {
         System.out.println(musicSourceService.searchMusic("周杰伦", 30, 1));
     }
-    @Resource(name="LocalMusic")
+    @Resource(name="webDavMusic")
     private MusicInfoService musicInfoService;
     @Test
     void test4() {
@@ -90,5 +90,9 @@ class OneBlueApplicationTests {
     @Test
     void test5() {
         systemConfigService.createSymbolicLinks();
+    }
+    @Test
+    void test6() {
+        musicSourceService.searchMusic("周杰伦", 10, 1).forEach(System.out::println);
     }
 }

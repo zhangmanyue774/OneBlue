@@ -7,6 +7,6 @@ public interface SystemConfigService {
     void getSystemConfig();
     Object updateSystemConfig(Map<String, Object> configs);
     Object getConfig();
-    //多文件夹创建软链接
+    //本地多文件夹创建软链接 - > 单文件夹
     void createSymbolicLinks();
 }

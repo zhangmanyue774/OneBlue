@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class UserVo {
     private String email;
-    private String Token;
     private String Avatar;
+    private String access_token;
+    private String refresh_token;
 }

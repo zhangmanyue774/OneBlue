@@ -1,7 +1,6 @@
 package com.sanzuriver.oneblue.SystemInit;
 
 import com.sanzuriver.oneblue.Entity.User;
-import com.sanzuriver.oneblue.Service.MusicInfoService;
 import com.sanzuriver.oneblue.Service.SystemConfigService;
 import com.sanzuriver.oneblue.Service.UserService;
 import jakarta.annotation.Resource;

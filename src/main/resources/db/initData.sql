@@ -24,3 +24,4 @@ INSERT OR IGNORE INTO configs (key, value) VALUES ('oneblue.web-dav.url', '');
 INSERT OR IGNORE INTO configs (key, value) VALUES ('oneblue.web-dav.username', '');
 INSERT OR IGNORE INTO configs (key, value) VALUES ('oneblue.web-dav.password', '');
 INSERT OR IGNORE INTO configs (key, value) VALUES ('isInit', '');
+INSERT OR IGNORE INTO configs (key, value) VALUES ('oneblue.music-dirs', '');

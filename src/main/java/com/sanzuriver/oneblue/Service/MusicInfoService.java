@@ -1,7 +1,11 @@
 package com.sanzuriver.oneblue.Service;
 
 import com.sanzuriver.oneblue.Entity.MusicTag;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.List;
 
@@ -15,7 +19,7 @@ public interface MusicInfoService {
         return null;
     }
     //音乐接口
-    default byte[] getMusicPlay(String fileName){
+    default ResponseEntity<StreamingResponseBody> getMusicPlay(String fileName, HttpServletRequest request){
         return null;
     };
     //标签纠错刮削
@@ -27,6 +31,10 @@ public interface MusicInfoService {
     void SynchronizeMusicListToDb();
     //方案3:系统首次初始化写如数据库
     void initMusicListToDb();
-
-
+    default ResponseEntity<StreamingResponseBody> getMusicBySid(String sid,HttpServletRequest request){
+        return null;
+    }
+    default String setShareLink(String fileName){
+        return null;
+    }
 }

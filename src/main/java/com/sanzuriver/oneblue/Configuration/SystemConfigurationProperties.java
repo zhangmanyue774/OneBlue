@@ -33,6 +33,7 @@ public class SystemConfigurationProperties {
     private String password;
     private String MusicFolderPath;
     private List<String> musicDirs;
+    private String domain;
     private WebDav webDav;
     @Data
     @RefreshScope

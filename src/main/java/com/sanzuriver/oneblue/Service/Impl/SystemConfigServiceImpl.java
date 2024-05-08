@@ -19,6 +19,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,6 +62,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     SystemConfigurationProperties systemConfigurationProperties;
     @Override
     public void createSymbolicLinks() {
+        System.out.println(systemConfigurationProperties.getMusicDirs());
         List<String> sourceDirectories = systemConfigurationProperties.getMusicDirs();
         String musicFolderPath = systemConfigurationProperties.getMusicFolderPath();
         for (String sourceDirectory : sourceDirectories) {

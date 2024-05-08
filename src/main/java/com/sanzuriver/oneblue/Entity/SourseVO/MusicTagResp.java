@@ -1,5 +1,6 @@
 package com.sanzuriver.oneblue.Entity.SourseVO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
